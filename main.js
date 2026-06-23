@@ -44,7 +44,7 @@ form.addEventListener('submit', async (e) => {
 
   const { error } = await supabase
     .from('notes')
-    .insert({ title: '', content: raw, user_id: '00000000-0000-0000-0000-000000000000' })
+    .insert({ title: '', content: raw })
 
   submitBtn.disabled = false
 
