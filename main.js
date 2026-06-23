@@ -28,7 +28,10 @@ async function loadNotes() {
     <li class="note">
       ${n.title ? `<strong>${escapeHtml(n.title)}</strong>` : ''}
       <p>${escapeHtml(n.content)}</p>
-      <time>${new Date(n.created_at).toLocaleString()}</time>
+      <div class="note-footer">
+        <time>${new Date(n.created_at).toLocaleString()}</time>
+        <button class="share-btn" data-content="${escapeHtml(n.content)}">Share via email</button>
+      </div>
     </li>
   `).join('')
 }
@@ -58,6 +61,37 @@ form.addEventListener('submit', async (e) => {
   status.textContent = 'Note saved.'
   status.className = 'success'
   await loadNotes()
+})
+
+list.addEventListener('click', async (e) => {
+  const btn = e.target.closest('.share-btn')
+  if (!btn) return
+
+  const content = btn.dataset.content
+  const recipientEmail = window.prompt('Enter the recipient\'s email address:')
+  if (!recipientEmail) return
+
+  btn.disabled = true
+  btn.textContent = 'Sending…'
+
+  try {
+    const res = await fetch('/api/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content, recipientEmail }),
+    })
+    const json = await res.json()
+    if (!res.ok) throw new Error(json.error || 'Failed to send')
+    btn.textContent = 'Sent!'
+    setTimeout(() => {
+      btn.textContent = 'Share via email'
+      btn.disabled = false
+    }, 3000)
+  } catch (err) {
+    alert(`Could not send: ${err.message}`)
+    btn.textContent = 'Share via email'
+    btn.disabled = false
+  }
 })
 
 function escapeHtml(str) {
