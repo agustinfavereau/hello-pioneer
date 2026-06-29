@@ -28,7 +28,7 @@ export default async function handler(req, res) {
 
   const { data, error } = await resend.emails.send({
     // Update "from" to a verified domain in Resend dashboard for production.
-    from: 'Pioneer Notes <onboarding@resend.dev>',
+    from: 'Pioneer Notes <notes@soshallwe.com>',
     to: recipientEmail,
     subject: 'Someone shared a note with you',
     html: buildEmail(content),
